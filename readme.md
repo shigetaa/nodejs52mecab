@@ -11,19 +11,19 @@
 プログラムで、形態要素解析を行うのに、有名なのは以下のような、形態解析エンジンがあります。
 
 > **MeCab**
-https://taku910.github.io/mecab/
+> https://taku910.github.io/mecab/
 
 > **ChaSen**
-https://chasen-legacy.osdn.jp/
+> https://chasen-legacy.osdn.jp/
 
 > **KyTea**
-http://www.phontron.com/kytea/index-ja.html
+> http://www.phontron.com/kytea/index-ja.html
 
 > **kuromoji**
-https://www.atilika.com/ja/kuromoji/
+> https://www.atilika.com/ja/kuromoji/
 
 > **Igo**
-https://igo.osdn.jp/
+> https://igo.osdn.jp/
 
 ここでは、**MeCab** を利用して形態要素解析を行うので、MeCab サイトからダウンロードしてインストールを行ってください。
 
