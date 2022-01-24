@@ -10,23 +10,34 @@
 
 プログラムで、形態要素解析を行うのに、有名なのは以下のような、形態解析エンジンがあります。
 
-> **MeCab**<br>https://taku910.github.io/mecab/
+> **MeCab** 
+> https://taku910.github.io/mecab/
 
-> **ChaSen**
+> **ChaSen** 
 > https://chasen-legacy.osdn.jp/
 
-> **KyTea**
+> **KyTea** 
 > http://www.phontron.com/kytea/index-ja.html
 
-> **kuromoji**
+> **kuromoji** 
 > https://www.atilika.com/ja/kuromoji/
 
-> **Igo**
+> **Igo** 
 > https://igo.osdn.jp/
+
 
 ここでは、**MeCab** を利用して形態要素解析を行うので、MeCab サイトからダウンロードしてインストールを行ってください。
 
 ## Node.js から MeCab を使う方法
+
+Node.js から MeCab を利用するにあたって、文字コードがShift_JISである為、Unicodeが基本となるNode.js で利用するには文字コードを Shift_JIS から UTF-8 に変換する必要があるので `iconv-lite` モジュールを利用して変換します。
+
+`iconv-lite` のインストールは以下のコマンドでインストールします。
+```bash
+npm i iconv-lite
+```
+
+
 
 ## プログラムを整理して形態解析モジュールを作ろう
 
