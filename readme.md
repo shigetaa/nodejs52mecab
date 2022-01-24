@@ -10,8 +10,7 @@
 
 プログラムで、形態要素解析を行うのに、有名なのは以下のような、形態解析エンジンがあります。
 
-> **MeCab**
-> https://taku910.github.io/mecab/
+> **MeCab**<br>https://taku910.github.io/mecab/
 
 > **ChaSen**
 > https://chasen-legacy.osdn.jp/
