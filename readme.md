@@ -208,5 +208,62 @@ node mecab-mod-test.js
 うち:名詞
 ```
 
-
 ## 文章にフリガナを振るプログラム
+
+それでは、前項で作成したMeCab のモジュールを利用いて、文章にフリガナを振るプログラムを`furigana.js`として作成していきます。
+
+```javascript
+var fs = require('fs');
+var Mecab = require('./mecab-mod.js');
+var mecab = new Mecab();
+
+// コマンドラインを調べる
+var args = process.argv;
+args.shift(); // node を除去
+args.shift(); // スクリプト名を除去
+
+// 引数がなければプログラムの使い方を表示する
+if (args.length <= 0) {
+	console.log("[USAGE] furigana.js 入力テキスト");
+	process.exit();
+}
+
+// 入力ファイルを読み込む 
+var inputfile = args.shift();
+var txt = fs.readFileSync(inputfile, "utf-8");
+
+// 形態素解析する
+mecab.parse(txt, function (err, items) {
+	var res = "";
+	for (var i in items) {
+		var k = items[i];
+		var word = k[0];
+		var kana = k[8];
+		if (k == "EOS") continue;
+		// フリガナが必要なときを判定 
+		if (word == kana || isHiragana(word) || kana == undefined) {
+			res += word;
+		} else {
+			res += word + '(' + kana + ')';
+		}
+	}
+	console.log(res);
+});
+
+// ひらがな判定
+function isHiragana(s) {
+	return (s.match(/^[あ-ん]+$/));
+}
+```
+文章を記述したテキストファイル`text.txt`を用意します。
+```txt
+吾輩は猫である。名前はまだ無い。
+どこで生れたかとんと見当がつかぬ。
+何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。
+吾輩はここで始めて人間というものを見た。
+```
+実行するには、以下のコマンドを実行します。
+```bash
+node furigana.js text.txt
+```
+> 吾輩(ワガハイ)は猫(ネコ)である。名前(ナマエ)はまだ無い(ナイ)。どこで生れ(ウマレ)たかとんと見当(ケントウ)がつかぬ。何(ナニ)でも薄暗い(ウスグライ)じめじめした所(トコロ)でニャーニャー泣い(ナイ)ていた事(イタコト)だけは記憶(キオク)している。吾輩(ワガハイ)はここで始め(ハジメ)て人間(ニンゲン)というものを見(ミ)た。
