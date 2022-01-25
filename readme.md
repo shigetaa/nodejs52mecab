@@ -121,5 +121,92 @@ node mecab.js
 この点に注意が必要です。
 
 ## プログラムを整理して形態解析モジュールを作ろう
+Node.Jsでモジュールを作るには、`module.exports`オブジェクトに追加したいメソッドを記述するだけです。
+
+### MeCab モジュールを作成
+MeCabのモジュールとして`mecab-mod.js`と言う名前のファイルを作成し以下の様に記述してみます。
+```javascript
+// MeCabを利用するためのモジュール
+module.exports = function () {
+	// 外部モジュールの取り込み
+	var execFile = require('child_process').execFile;
+	var iconv = require('iconv-lite');
+	var fs = require('fs');
+	var platform = require('os').platform();
+
+	// モジュール変数の定義
+	// 一時ファイル
+	this.TMP_FILE = '__mecab_tmpfile';
+	// MeCabのコマンドライン
+	this.MECAB = 'mecab';
+	this.ENCODING = (platform.substr(0, 3) == 'win')
+		? 'SHIFT_JIS' : 'UTF-8';
+
+	// 形態素解析を実行する関数
+	this.parse = function (text, callback) {
+		var encoding = this.ENCODING;
+		text += "\n";
+		// 変換元テキストを一時ファイルに保存
+		if (encoding != 'UTF-8') {
+			var buf = iconv.encode(text, encoding);
+			fs.writeFileSync(this.TMP_FILE, buf, "binary");
+		} else {
+			fs.writeFileSync(this.TMP_FILE, text, "UTF-8");
+		}
+		// コマンドを実行
+		this.opt = { encoding: 'UTF-8' };
+		if (encoding != 'UTF-8') this.opt.encoding = 'binary';
+		execFile(this.MECAB, [this.TMP_FILE], this.opt,
+			function (err, stdout, stderr) {
+				if (err) return callback(err);
+				var inp;
+				// 結果出力ファイルを元に戻す
+				if (encoding != 'UTF-8') {
+					iconv.skipDecodeWarning = true;
+					inp = iconv.decode(stdout, encoding);
+				} else {
+					inp = stdout;
+				}
+				// 結果をパースする
+				inp = inp.replace(/\r/g, "");
+				inp = inp.replace(/\s+$/, "");
+				var lines = inp.split("\n");
+				var res = lines.map(function (line) {
+					return line.replace('\t', ',').split(',');
+				});
+				callback(err, res);
+			});
+	};
+};
+```
+MeCabを実行するプログラムとして`mecab-mod-test`と言う名前のファイルを作成し以下の様に記述してみます。
+```javascript
+var Mecab = require('./mecab-mod.js');
+var mecab = new Mecab();
+
+var text = "すもももももももものうち";
+mecab.parse(text, function (err, items) {
+	for (var i in items) {
+		var k = items[i];
+		if (k == "EOS") continue;
+		console.log(k[0] + ":" + k[1]);
+	}
+});
+```
+
+実行するには、以下のコマンドを実行します。
+```bash
+node mecab-mod-test.js
+```
+```bash
+すもも:名詞
+も:助詞
+もも:名詞
+も:助詞
+もも:名詞
+の:助詞
+うち:名詞
+```
+
 
 ## 文章にフリガナを振るプログラム
